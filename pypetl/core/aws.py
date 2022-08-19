@@ -1,3 +1,7 @@
+"""
+	AWS Manager (using Boto3)
+
+"""
 import os
 import json
 import boto3
@@ -6,11 +10,6 @@ try:
     from . import file, log, preference
 except ImportError:
     import file, log, preference
-
-try:
-    pass
-except:
-    pass
 
 session = boto3.session.Session()
 config = preference.config
