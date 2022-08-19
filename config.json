@@ -1,0 +1,18 @@
+{
+    "aws": {
+        "secret": {
+            "rds": "renos-db-rds-staging-data",
+            "redshift": "renos-wh-redshift-data",
+            "bastion": "renos-data-bastion"
+        }
+    },
+    "tunnel_connection": {
+        "bastion": {
+            "rsa": true,
+            "remote": [
+                "rds",
+                "redshift"
+            ]
+        }
+    }
+}
