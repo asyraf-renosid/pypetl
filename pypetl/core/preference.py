@@ -3,4 +3,6 @@ try:
 except ImportError:
     import file, log
 
+
 config = file.open_json('config.json')
+

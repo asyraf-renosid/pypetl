@@ -75,14 +75,20 @@ def getSecret(id, alias, **kwargs):
             - pypetl.core.aws.validateSecretEngine
             
     """
-    log.append('pypetl.core.aws.getSecret(%s, %s): Starting...'%(id, alias))
+    fname = 'pypetl.core.aws.getSecret(%s, %s)'%(id, alias)
+    kwargs_key = kwargs.keys()
+    if 'before' in kwargs_key:
+        log.addIndent(fname, before = kwargs['before'])
+    else:
+        log.addIndent(fname)
+    log.append('Starting...', fname=fname)
     global secret
     data = json.loads(session.client('secretsmanager').get_secret_value(SecretId=id)['SecretString'])
     engine = validateSecretEngine(data['engine'])
     secret[engine][alias] = {}
     for key in ["username", "password", "engine", "host", "port", "database"]:
         secret[engine][alias][key] = data[key]
-    log.append('pypetl.core.aws.getSecret(%s, %s): Done!'%(id, alias))
+    log.append('Done!', fname=fname)
 
 
 def getSecretAll():
@@ -99,9 +105,11 @@ def getSecretAll():
             This method can be used to retrieve all secret stored in AWS Secret Manager based on stored Secret ID in the config.json file
 
     """
-    log.append('pypetl.core.aws.getSecretAll(): Starting...')
+    fname = 'pypetl.core.aws.getSecretAll()'
+    log.addIndent(fname)
+    log.append('Starting...', fname=fname)
     source = config['aws']['secret']
     for alias, id in source.items():
-        getSecret(id, alias)
-    log.append('pypetl.core.aws.getSecretAll(): Done!')
+        getSecret(id, alias, before=fname)
+    log.append('Done!', fname=fname)
     
