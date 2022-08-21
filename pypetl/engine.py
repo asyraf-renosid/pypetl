@@ -8,17 +8,21 @@ log.configure(show = True)
 env = os.environ.get("AWS_EXECUTION_ENV")
 aws.getSecretAll()
 
-def start():
+def start(gap=""):
     """
     
     """
+    fname = "pypetl.engine.start()"
+    gap_new = gap + "   "
+    
+    log.append('%s: Starting...')
     if env == None:
-        connection.startSSHAll()
-        connection.startDBAll()
+        connection.startSSHAll(gap=gap_new)
+        connection.startDBAll(gap=gap_new)
     else:
-        connection.startDBAll()
+        connection.startDBAll(gap=gap_new)
     
-def stop():
+def stop(gap=""):
     if env == None:
         connection.stopDBAll()
         connection.stopSSHAll()

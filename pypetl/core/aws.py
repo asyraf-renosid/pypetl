@@ -91,7 +91,7 @@ def getSecret(id, alias, gap="", **kwargs):
     log.append('%s: Done!'%(fname), gap=gap_new)
 
 
-def getSecretAll():
+def getSecretAll(gap=""):
     """
         Get All Secret
  
@@ -106,7 +106,7 @@ def getSecretAll():
 
     """
     fname = 'pypetl.core.aws.getSecretAll()'
-    gap_new = ""
+    gap_new = gap+"   "
     log.append('%s: Starting...'%(fname), gap=gap_new)
     source = config['aws']['secret']
     for alias, id in source.items():
