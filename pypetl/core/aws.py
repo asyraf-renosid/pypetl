@@ -1,16 +1,32 @@
 """
-	AWS Manager (using Boto3)
+    AWS Manager (using boto3)
+    
+    Author: 
+        Asyraf Nur
+    
+    Path: 
+        pypetl.core.aws
 
+    Description:
+        ----
+        
+    Dependency:
+        - boto3
+        - json
+        - pypetl.core.file
+        - pypetl.core.log
+        - pypetl.core.preference
 """
 import os
-import json
 import boto3
+import json
 
 try:
     from . import file, log, preference
 except ImportError:
     import file, log, preference
 
+# Global Variable
 session = boto3.session.Session()
 config = preference.config
 secret = {
@@ -18,22 +34,51 @@ secret = {
     'ssh': {}
 }
 
+def validateSecretEngine(engine):
+   """
+        Validate Engine of the Secret
+        
+        Author: 
+            Asyraf Nur
+            
+        Path: 
+            pypetl.core.aws.validateSecretEngine()
+        
+        Description:
+            -
+            
+        Dependency:
+            -
+            
+    """ 
+    if engine in ['redshift', 'postgres']:
+        result = 'database'
+    elif engine in ['ssh']:
+        result = 'ssh'
+    return result
+        
 def getSecret(id, alias, **kwargs):
     """
         Get Secret
-
+        
+        Author: 
+            Asyraf Nur
+            
+        Path: 
+            pypetl.core.aws.getSecret()
+        
         Description:
-            This method can be used to retrieve all secret stored in AWS Secret Manager
-            based on Secret ID input
-
+            This method can be used to retrieve all secret stored in AWS Secret Manager based on Secret ID input and cache them in the memory
+            
+        Dependency:
+            - json
+            - pypetl.core.aws.validateSecretEngine
+            
     """
     log.append('pypetl.core.aws.getSecret(%s, %s, %s): Starting...'%(id, alias, kwargs))
     global secret
     data = json.loads(session.client('secretsmanager').get_secret_value(SecretId=id)['SecretString'])
-    if data['engine'] in ['redshift', 'postgres']:
-        engine = 'database'
-    elif data['engine'] in ['ssh']:
-        engine = 'ssh'
+    engine = validateSecretEngine(data['engine'])
     secret[engine][alias] = {}
     for key in ["username", "password", "engine", "host", "port", "database"]:
         secret[engine][alias][key] = data[key]
@@ -43,10 +88,15 @@ def getSecret(id, alias, **kwargs):
 def getSecretAll():
     """
         Get All Secret
-
+ 
+        Author: 
+            Asyraf Nur
+            
+        Path: 
+            pypetl.core.aws.getSecret()
+        
         Description:
-            This method can be used to retrieve all secret stored in AWS Secret Manager
-            based on stored Secret ID in the config.json file
+            This method can be used to retrieve all secret stored in AWS Secret Manager based on stored Secret ID in the config.json file
 
     """
     log.append('pypetl.core.aws.getSecretAll(): Starting...')

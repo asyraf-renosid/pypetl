@@ -1,12 +1,17 @@
 """
     File Manager
     
-    author: Asyraf Nur
-    path: pypetl/core/file.py
+    Author: 
+        Asyraf Nur
+        
+    Path: 
+        pypetl/core/file.py
 
     Description:
-        This python function developed in order to simplify 
-        all task related to the file management system
+        This python function developed in order to simplify all task related to the file management system
+        
+    Dependency:
+        - json
 """
 
 import json
