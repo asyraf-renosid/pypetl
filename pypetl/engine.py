@@ -1,9 +1,10 @@
 import os
 try:
-    from .core import aws, connection
+    from .core import log, aws, connection
 except ImportError:
-    from core import aws, connection
+    from core import log, aws, connection
 
+log.configure(show = True)
 aws.getSecretAll()
 if os.environ.get("AWS_EXECUTION_ENV") == None:
     connection.startSSHAll()

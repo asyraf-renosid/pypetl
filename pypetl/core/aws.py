@@ -35,7 +35,7 @@ secret = {
 }
 
 def validateSecretEngine(engine):
-   """
+    """
         Validate Engine of the Secret
         
         Author: 
@@ -75,14 +75,14 @@ def getSecret(id, alias, **kwargs):
             - pypetl.core.aws.validateSecretEngine
             
     """
-    log.append('pypetl.core.aws.getSecret(%s, %s, %s): Starting...'%(id, alias, kwargs))
+    log.append('pypetl.core.aws.getSecret(%s, %s): Starting...'%(id, alias))
     global secret
     data = json.loads(session.client('secretsmanager').get_secret_value(SecretId=id)['SecretString'])
     engine = validateSecretEngine(data['engine'])
     secret[engine][alias] = {}
     for key in ["username", "password", "engine", "host", "port", "database"]:
         secret[engine][alias][key] = data[key]
-    log.append('pypetl.core.aws.getSecret(%s, %s, %s): Done!'%(id, alias, kwargs))
+    log.append('pypetl.core.aws.getSecret(%s, %s): Done!'%(id, alias))
 
 
 def getSecretAll():

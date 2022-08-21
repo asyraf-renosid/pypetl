@@ -66,7 +66,7 @@ def format(log):
             - 
             
     """ 
-    return (' %s  '%(separatorTimeMessage).join(repr(l) for l in log)).replace("'","")
+    return ('%s %s  %s'%(log[0], separatorTimeMessage, log[1]))
 
 def append(message, **kwargs):
     """
