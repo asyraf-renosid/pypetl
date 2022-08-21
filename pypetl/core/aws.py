@@ -57,7 +57,7 @@ def validateSecretEngine(engine):
         result = 'ssh'
     return result
         
-def getSecret(id, alias, **kwargs):
+def getSecret(id, alias, gap="", **kwargs):
     """
         Get Secret
         
@@ -76,19 +76,15 @@ def getSecret(id, alias, **kwargs):
             
     """
     fname = 'pypetl.core.aws.getSecret(%s, %s)'%(id, alias)
-    kwargs_key = kwargs.keys()
-    if 'before' in kwargs_key:
-        log.addIndent(fname, before = kwargs['before'])
-    else:
-        log.addIndent(fname)
-    log.append('Starting...', fname=fname)
+    gap_new = gap+"   "
+    log.append('%s: Starting...'%(fname), gap=gap_new)
     global secret
     data = json.loads(session.client('secretsmanager').get_secret_value(SecretId=id)['SecretString'])
     engine = validateSecretEngine(data['engine'])
     secret[engine][alias] = {}
     for key in ["username", "password", "engine", "host", "port", "database"]:
         secret[engine][alias][key] = data[key]
-    log.append('Done!', fname=fname)
+    log.append('%s: Done!'%(fname), gap=gap_new)
 
 
 def getSecretAll():
@@ -106,10 +102,10 @@ def getSecretAll():
 
     """
     fname = 'pypetl.core.aws.getSecretAll()'
-    log.addIndent(fname)
-    log.append('Starting...', fname=fname)
+    gap_new = ""
+    log.append('%s: Starting...'%(fname), gap=gap_new)
     source = config['aws']['secret']
     for alias, id in source.items():
-        getSecret(id, alias, before=fname)
-    log.append('Done!', fname=fname)
+        getSecret(id, alias, gap=gap_new)
+    log.append('%s: Done!'%(fname), gap=gap_new)
     

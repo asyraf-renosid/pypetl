@@ -22,9 +22,6 @@ from datetime import datetime, timedelta, date, time
 
 # Global Variable
 report = []
-indent = {
-    "":""
-}
 show = False
 separatorTimeMessage = '>'
 
@@ -52,14 +49,6 @@ def configure(**kwargs):
     if 'sepTM' in kwargs_key:
         separatorTimeMessage = kwargs['sepTM']
 
-def addIndent(fname, **kwargs):
-    global indent
-    kwargs_key = kwargs.keys()
-    if 'before' in kwargs_key:
-        indent[fname] = "%s   "%(indent[kwargs['before']])
-    else:
-        indent[fname] = ""
-
 def format(log, **kwargs):
     """
         Formatter
@@ -78,8 +67,8 @@ def format(log, **kwargs):
             
     """ 
     kwargs_key = kwargs.keys()
-    if 'fname' in kwargs_key:
-        return ('%s %s  %s%s %s'%(log[0], separatorTimeMessage, indent[kwargs['fname']], kwargs['fname'], log[1]))
+    if 'gap' in kwargs_key:
+        return ('%s %s  %s%s'%(log[0], separatorTimeMessage, kwargs['gap'], log[1]))
     else:
         return ('%s %s  %s'%(log[0], separatorTimeMessage, log[1]))
 
@@ -113,9 +102,9 @@ def append(message, **kwargs):
     log = [(datetime.utcnow() + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S'), message]
     report.append(log)
     
-    if 'fname' in kwargs_key:
+    if 'gap' in kwargs_key:
         if tempshow == True:
-            print(format(log, fname=kwargs['fname']))
+            print(format(log, gap=kwargs['gap']))
     else:
         if tempshow == True:
             print(format(log))
