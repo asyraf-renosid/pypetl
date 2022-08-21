@@ -34,7 +34,7 @@ secret = {
     'ssh': {}
 }
 
-def validateSecretEngine(engine):
+def validateSecretEngine(engine, gap=""):
     """
         Validate Engine of the Secret
         
@@ -50,11 +50,15 @@ def validateSecretEngine(engine):
         Dependency:
             -
             
-    """ 
+    """
+    fname = 'pypetl.core.aws.validateSecretEngine(%s)'%(engine)
+    gap_new = gap+"   "
+    log.append('%s: Validating...'%(fname), gap=gap_new)
     if engine in ['redshift', 'postgres']:
         result = 'database'
     elif engine in ['ssh']:
         result = 'ssh'
+    log.append('%s: Validated as %s!'%(fname, result), gap=gap_new)
     return result
         
 def getSecret(id, alias, gap="", **kwargs):
@@ -80,7 +84,7 @@ def getSecret(id, alias, gap="", **kwargs):
     log.append('%s: Starting...'%(fname), gap=gap_new)
     global secret
     data = json.loads(session.client('secretsmanager').get_secret_value(SecretId=id)['SecretString'])
-    engine = validateSecretEngine(data['engine'])
+    engine = validateSecretEngine(data['engine'], gap=gap_new)
     secret[engine][alias] = {}
     for key in ["username", "password", "engine", "host", "port", "database"]:
         secret[engine][alias][key] = data[key]
