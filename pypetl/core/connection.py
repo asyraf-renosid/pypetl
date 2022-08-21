@@ -1,3 +1,26 @@
+"""
+    Connection Manager
+    
+    Author: 
+        Asyraf Nur
+        
+    Path: 
+        pypetl.core.connection
+    
+    Description:
+        -
+        
+    Dependency:
+        - io
+        - paramiko
+        - sshtunnel
+        - psycopg2 / psycopg2-binary
+        - redshift_connector
+        - pypetl.core.aws
+        - pypetl.core.log
+        - pypetl.core preference
+        
+""" 
 import paramiko
 import redshift_connector as rc
 import psycopg2 as pg
@@ -9,6 +32,7 @@ try:
 except ImportError:
     import aws, log, preference
 
+# Global Variable
 config = preference.config
 credential = {}
 session = {
@@ -16,10 +40,25 @@ session = {
     'ssh': {}
 }
 
-
-def startDB(alias, engine, host, port, username, password, database):
+def startDB(engine, host, port, username, password, database):
+    """
+        Start DB Session
+        
+        Author: 
+            Asyraf Nur
+            
+        Path: 
+            pypetl.core.log startDB()
+        
+        Description:
+            -
+            
+        Dependency:
+            -
+            
+    """ 
     if engine=='postgres':
-        session['database'][alias] = pg.connect(
+        return pg.connect(
             host = host,
             port = port,
             database = database,
@@ -27,7 +66,7 @@ def startDB(alias, engine, host, port, username, password, database):
             password = password
         )
     elif engine=='redshift':
-        session['database'][alias] = rc.connect(
+        return rc.connect(
             host = host,
             port = port,
             database = database,
@@ -41,7 +80,7 @@ def startDBFromSecret(alias):
     credential = aws.secret['database'][alias]
     engine, host, port = credential['engine'], credential['host'], credential['port']
     username, password, database = credential['username'], credential['password'], credential['database']
-    startDB(alias, engine, host, port, username, password, database)
+    session['database'][alias] = startDB(alias, engine, host, port, username, password, database)
 
 def startDBAll():
     """
@@ -68,20 +107,11 @@ def mergeRemoteAddress(aliases):
 
 def generateRSAKey(password):
     content = "-----BEGIN RSA PRIVATE KEY-----\n%s\n-----END RSA PRIVATE KEY-----"%(password.replace(" ", "\n"))
-    result = paramiko.RSAKey.from_private_key(StringIO(content))
-    return result
+    return paramiko.RSAKey.from_private_key(StringIO(content))
 
-def startSSHFromSecret(alias):
-    global session
-    credential = aws.secret['ssh'][alias]
-    host, port = credential['host'], int(credential['port'])
-    username, password = credential['username'], credential['password']
-    rsa = config['tunnel_connection'][alias]['rsa']
-    remote_alias = config['tunnel_connection'][alias]['remote']
-    remote_address = mergeRemoteAddress(remote_alias)
-    pkey = generateRSAKey(password)
+def forwardTunnel(rsa, host, port, username, password, remote_address):
     if rsa == True:
-        session['ssh'][alias] = SSHTunnelForwarder(
+        return SSHTunnelForwarder(
             (
                 host, 
                 port
@@ -91,7 +121,7 @@ def startSSHFromSecret(alias):
             , remote_bind_addresses = remote_address
         )
     else:
-        session['ssh'][alias] = SSHTunnelForwarder(
+        return SSHTunnelForwarder(
             (
                 host, 
                 port
@@ -100,6 +130,17 @@ def startSSHFromSecret(alias):
             , ssh_password = password
             , remote_bind_addresses = remote_address
         )
+    
+def startSSHFromSecret(alias):
+    global session
+    credential = aws.secret['ssh'][alias]
+    host, port = credential['host'], int(credential['port'])
+    username, password = credential['username'], credential['password']
+    rsa = config['tunnel_connection'][alias]['rsa']
+    remote_alias = config['tunnel_connection'][alias]['remote']
+    remote_address = mergeRemoteAddress(remote_alias)
+    pkey = generateRSAKey(password)
+    session['ssh']
     session['ssh'][alias].start()
     for db_alias in remote_alias:
         dbhost, dbport = session['ssh'][alias].local_bind_addresses[remote_alias.index(db_alias)]
