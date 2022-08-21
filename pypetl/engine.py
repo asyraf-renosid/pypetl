@@ -1,10 +1,12 @@
 import os
+
 try:
-    from .core import log, aws, connection
+    from .core import log, aws, connection, preference
 except ImportError:
-    from core import log, aws, connection
+    from core import log, aws, connection, preference
 
 env = os.environ.get("AWS_EXECUTION_ENV")
+config = preference.config
 aws.getSecretAll()
 
 def start(gap=""):
@@ -32,4 +34,5 @@ def stop(gap=""):
         connection.stopDBAll(gap=gap_new)
     log.append('%s: Stopped!'%(fname), gap=gap)
 
-start()
+if config['engine']['start']:
+    start()
