@@ -14,5 +14,8 @@
                 "redshift"
             ]
         }
+    },
+    "log": {
+        "show": true
     }
 }

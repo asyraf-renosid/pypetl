@@ -17,14 +17,13 @@
         - pypetl.core.log
         - pypetl.core.preference
 """
-import os
 import boto3
 import json
 
 try:
-    from . import file, log, preference
+    from . import log, preference
 except ImportError:
-    import file, log, preference
+    import log, preference
 
 # Global Variable
 session = boto3.session.Session()
@@ -53,12 +52,12 @@ def validateSecretEngine(engine, gap=""):
     """
     fname = 'pypetl.core.aws.validateSecretEngine(%s)'%(engine)
     gap_new = gap+"   "
-    log.append('%s: Validating...'%(fname), gap=gap_new)
+    log.append('%s: Validating...'%(fname), gap=gap)
     if engine in ['redshift', 'postgres']:
         result = 'database'
     elif engine in ['ssh']:
         result = 'ssh'
-    log.append('%s: Validated as %s!'%(fname, result), gap=gap_new)
+    log.append('%s: Validated as %s!'%(fname, result), gap=gap)
     return result
         
 def getSecret(id, alias, gap="", **kwargs):
@@ -81,14 +80,14 @@ def getSecret(id, alias, gap="", **kwargs):
     """
     fname = 'pypetl.core.aws.getSecret(%s, %s)'%(id, alias)
     gap_new = gap+"   "
-    log.append('%s: Starting...'%(fname), gap=gap_new)
+    log.append('%s: Starting...'%(fname), gap=gap)
     global secret
     data = json.loads(session.client('secretsmanager').get_secret_value(SecretId=id)['SecretString'])
     engine = validateSecretEngine(data['engine'], gap=gap_new)
     secret[engine][alias] = {}
     for key in ["username", "password", "engine", "host", "port", "database"]:
         secret[engine][alias][key] = data[key]
-    log.append('%s: Done!'%(fname), gap=gap_new)
+    log.append('%s: Done!'%(fname), gap=gap)
 
 
 def getSecretAll(gap=""):
@@ -107,9 +106,9 @@ def getSecretAll(gap=""):
     """
     fname = 'pypetl.core.aws.getSecretAll()'
     gap_new = gap+"   "
-    log.append('%s: Starting...'%(fname), gap=gap_new)
+    log.append('%s: Starting...'%(fname), gap=gap)
     source = config['aws']['secret']
     for alias, id in source.items():
         getSecret(id, alias, gap=gap_new)
-    log.append('%s: Done!'%(fname), gap=gap_new)
+    log.append('%s: Done!'%(fname), gap=gap)
     
