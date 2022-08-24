@@ -18,6 +18,16 @@ def executeDBSecret(alias, query):
     cursor.execute(query)
     session.commit()
 
+def toDBSecretDelete(alias, table, location_table, condition='id'):
+    if table.nrows() != 0:
+        delete_value = ', '.join( repr(v) for v in table.todataframe()[condition].values.tolist()).replace("'","")
+        delete_query = 'DELETE FROM %s WHERE %s in ( %s );'%(
+            location_table,
+            condition,
+            delete_value
+        )
+        executeDBSecret(alias, delete_query)
+
 def toDBSecretUpdate(alias, table, location_table, condition='id'):
     if table.nrows() != 0:
         delete_value = ', '.join( repr(v) for v in table.todataframe()[condition].values.tolist()).replace("'","")

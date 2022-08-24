@@ -6,3 +6,4 @@
 | 2022-08-21 | 4            | -    |
 | 2022-08-21 | 5            | -    |
 | 2022-08-24 | 6            | Fix bug on updating data to the database |
+| 2022-08-24 | 7            | Add delete function to the database |
