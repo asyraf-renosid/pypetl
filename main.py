@@ -1,13 +1,10 @@
 import pypetl
+import pipeline
 
 try:
-    data = pypetl.fromDBSecret(
-        'rds',
-        'SELECT * FROM public.rns_order'
-    )
-    print(data)
-    
+    pipeline.rns_order.run()    
     pypetl.engine.stop()
-except:
+except Exception as e:
+    print(str(e))
     pypetl.engine.stop()
     
